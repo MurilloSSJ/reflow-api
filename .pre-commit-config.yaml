@@ -1,0 +1,67 @@
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+    -   id: trailing-whitespace
+        exclude: ^(tests/|env/)
+    -   id: check-yaml
+        exclude: ^(tests/|env/)
+    -   id: check-added-large-files
+        exclude: ^(tests/|env/)
+    -   id: check-merge-conflict
+        exclude: ^(tests/|env/)
+        include: ^src/
+    -   id: check-ast
+        exclude: ^(tests/|env/)
+        include: ^src/
+    -   id: debug-statements
+        exclude: ^(tests/|env/)
+        include: ^src/
+    -   id: check-toml
+        exclude: ^tests/
+        include: ^src/
+    -   id: check-json
+        exclude: ^tests/
+        include: ^src/
+    -   id: check-xml
+        exclude: ^(tests/|env/)
+-   repo: https://github.com/google/yapf
+    rev: v0.40.2
+    hooks:
+    -   id: yapf
+        exclude: ^env/
+        args: [
+            "--style", "{based_on_style: google, column_limit: 120, align_closing_bracket_with_visual_indent: True, indent_closing_brackets: True, split_before_dot: True, split_before_logical_operator: True, split_before_expression_after_opening_paren: True , indent_width: 4, }"]
+-   repo: https://github.com/pycqa/pylint
+    rev: 'v3.0.1'
+    hooks:
+    -   id: pylint
+        args: ["--rcfile=.pylintrc"]
+        exclude: ^(tests/|env/)
+-   repo: https://github.com/pycqa/isort
+    rev: 5.12.0
+    hooks:
+    -   id: isort
+        name: isort (python)
+        exclude: ^(tests/|env/)
+    -   id: isort
+        name: isort (cython)
+        types: [cython]
+    -   id: isort
+        name: isort (pyi)
+        types: [pyi]
+-   repo: local
+    hooks:
+    -   id: pytest
+        name: pytest
+        entry: pytest
+        language: system
+        types: [python]
+        pass_filenames: false
+        always_run: true
+        args: ["-k", "not slow", "--cov=src"]
+        stages: ['push']
+        exclude: ^(tests/|env/)
+
+default_stages: ['commit', 'push']
+
