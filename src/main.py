@@ -5,7 +5,7 @@ imports all the routes from the modules folder.
 import importlib
 
 from fastapi import FastAPI
-
+from fastapi.middleware.cors import CORSMiddleware
 import src.modules as routes
 
 app = FastAPI(
@@ -15,7 +15,13 @@ app = FastAPI(
         "filter": True,
     }
 )
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 for route in routes.modules:
     module = importlib.import_module(f"src.modules.{route}.routes")
     app.include_router(module.router, prefix="/api")
