@@ -3,6 +3,7 @@
 from fastapi import APIRouter
 from src.modules.dag.model import DagModel
 from src.modules.dag.controller import DagController
+from fastapi.responses import StreamingResponse
 
 router = APIRouter(prefix="/dag", tags=["dags"])
 
@@ -30,4 +31,8 @@ async def delete_dag():
 @router.post("")
 async def create_dag(dag: DagModel):
     """Returns the average DAG runtime."""
-    return controller.create_dag(dag)
+    response = StreamingResponse(
+        controller.create_dag(dag), media_type="application/octet-stream"
+    )
+    response.headers["Content-Disposition"] = f"attachment; filename={dag.dag_id}.py"
+    return response
