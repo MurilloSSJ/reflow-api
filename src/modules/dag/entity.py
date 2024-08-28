@@ -1,5 +1,6 @@
 from typing import Optional, List
 from src.modules.task.model import BaseTask
+from datetime import datetime
 
 
 class DagTemplate:
@@ -11,7 +12,7 @@ class DagTemplate:
         description: Optional[str] = None,
         schedule=None,
         schedule_interval=None,
-        start_date=None,
+        start_date: datetime = None,
         end_date=None,
         default_args=None,
         concurrency=None,
@@ -48,7 +49,7 @@ class DagTemplate:
     def set_imports(self):
         operators = [task.get("operator") for task in self.tasks]
         operators = list(set(operators))
-        imports = ""
+        imports = "from datetime import datetime\n"
         for operator in operators:
             if operator == "PythonOperator":
                 imports += (
@@ -94,7 +95,7 @@ class DagTemplate:
                 + f"\t'task_id': '{task.get('task_id')}',\n"
                 + f"\t'task_group': '{task.get('task_group')}',\n"
                 + f"\t'dependencies': {task.get('dependencies')},\n"
-                + f"\t'operator': {task.get('operator')},\n"
+                + f"\t'operator': {task.get('operator').value},\n"
                 + f"\t'operator_args': {task.get('operator_args')},\n"
                 + "}\n"
                 + "))\n"
@@ -103,7 +104,7 @@ class DagTemplate:
             f"DagFactory(\n"
             + f"\t'{self.dag_id}',"
             + f"tasks,"
-            + f"start_date={self.start_date},"
+            + f"start_date=datetime({self.start_date.year},{self.start_date.month},{self.start_date.day}),"
             + f"schedule_interval='{self.schedule_interval}',"
             + f"catchup={self.catchup}"
             + f").register_dag()"
