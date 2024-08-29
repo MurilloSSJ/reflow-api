@@ -83,8 +83,8 @@ class DagTemplate:
         return functions
 
     def get_template(self):
-        content = "from generics.dag_factory.factory import DagFactory\n"
-        content += "from generics.dag_factory.models.task import TaskModel\n"
+        content = "from dag_craft.factory import DagFactory\n"
+        content += "from dag_craft.models.task import TaskModel\n"
         content += self.set_imports()
         content += self.set_functions_and_scripts()
         content += "tasks = []\n"
