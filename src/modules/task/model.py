@@ -26,6 +26,7 @@ class OperatorsChoice(str, Enum):
     ShortCircuitOperator = "ShortCircuitOperator"
     EmailOperator = "EmailOperator"
     SimpleHttpOperator = "SimpleHttpOperator"
+    SQLExecuteQueryOperator = "SQLExecuteQueryOperator"
 
 
 class BaseTask(BaseModel):

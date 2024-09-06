@@ -1,6 +1,7 @@
 from typing import Optional, List
 from src.modules.task.model import BaseTask
 from datetime import datetime
+import re
 
 
 class DagTemplate:
@@ -73,6 +74,8 @@ class DagTemplate:
                 imports += (
                     "from airflow.operators.http_operator import SimpleHttpOperator\n"
                 )
+            elif operator == "SQLExecuteQueryOperator":
+                imports += "from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator\n"
         return imports
 
     def set_functions_and_scripts(self):
@@ -80,6 +83,8 @@ class DagTemplate:
         for task in self.tasks:
             if task.get("function"):
                 functions += task.get("function").replace("\t", "    ") + "\n"
+            if task.get("script"):
+                functions += f'{task.get("task_id")}_script="""task.get("script").replace("\t", "    ") + "\n" + """\n'
         return functions
 
     def get_template(self):
@@ -89,6 +94,10 @@ class DagTemplate:
         content += self.set_functions_and_scripts()
         content += "tasks = []\n"
         for task in self.tasks:
+            if "python_callable" in task.get("operator_args").keys():
+                task.get("operator_args")[
+                    "python_callable"
+                ] = f"REMOVEQUOTES{task.get('operator_args').get('python_callable')}REMOVEQUOTES"
             content += (
                 f"tasks.append(TaskModel(\n"
                 + "**{\n"
@@ -109,4 +118,9 @@ class DagTemplate:
             + f"catchup={self.catchup}"
             + f").register_dag()"
         )
-        return content
+        return (
+            content.replace("'REMOVEQUOTES", "")
+            .replace("REMOVEQUOTES'", "")
+            .replace('"REMOVEQUOTES', "")
+            .replace('REMOVEQUOTES"', "")
+        )
